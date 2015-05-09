@@ -44,7 +44,6 @@ var _ = Describe("IndexReader", func() {
 			{"MAYBE NOT", nil},
 
 			{"key.0000", []int64{128}},
-			{"key.0000", []int64{128}},
 			{"key.0001", []int64{149}},
 			{"key.0011", []int64{359}},
 			{"key.0110", []int64{2438}},

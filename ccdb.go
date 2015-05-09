@@ -14,7 +14,6 @@ const (
 	numBuckets = 256
 
 	checksumInit csum32 = 5381 // Initial checksum value
-	maxUint32           = 1<<32 - 1
 )
 
 var (

@@ -87,7 +87,7 @@ var _ = Describe("LogWriter", func() {
 
 		info, err := os.Stat(iname)
 		Expect(err).NotTo(HaveOccurred())
-		Expect(info.Size()).To(Equal(int64(2208)))
+		Expect(info.Size()).To(Equal(int64(3248)))
 	})
 
 })

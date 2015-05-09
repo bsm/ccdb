@@ -24,7 +24,7 @@ func OpenIndex(fname string) (*IndexReader, error) {
 // Seek returns an log-offset iterator
 func (i *IndexReader) Seek(key []byte) (*IndexIterator, error) {
 	cksum := checksum(key)
-	tbuf := make([]byte, 8)
+	tbuf := make([]byte, 12)
 
 	offset, nslots, err := i.seekBucket(cksum.Bucket(), tbuf)
 	if err != nil {
@@ -45,13 +45,13 @@ func (i *IndexReader) Seek(key []byte) (*IndexIterator, error) {
 }
 
 func (i *IndexReader) seekBucket(n int, tbuf []byte) (int64, int, error) {
-	_, err := i.file.ReadAt(tbuf, fileHeaderLen+int64(n*8))
+	_, err := i.file.ReadAt(tbuf, fileHeaderLen+int64(n*12))
 	if err != nil {
 		return 0, 0, err
 	}
 
-	return int64(binary.LittleEndian.Uint32(tbuf[0:])),
-		int(binary.LittleEndian.Uint32(tbuf[4:])),
+	return int64(binary.LittleEndian.Uint64(tbuf[0:])),
+		int(binary.LittleEndian.Uint32(tbuf[8:])),
 		nil
 }
 
@@ -107,11 +107,11 @@ func (i *IndexIterator) Next() bool {
 }
 
 func (i *IndexIterator) readCurrent() (s slot, err error) {
-	if _, err = i.src.ReadAt(i.tbuf, i.offset+int64(i.cursor*8)); err != nil {
+	if _, err = i.src.ReadAt(i.tbuf, i.offset+int64(i.cursor*12)); err != nil {
 		return
 	}
 
 	s.cksum = csum32(binary.LittleEndian.Uint32(i.tbuf[0:]))
-	s.lpos = int64(binary.LittleEndian.Uint32(i.tbuf[4:]))
+	s.lpos = int64(binary.LittleEndian.Uint64(i.tbuf[4:]))
 	return
 }

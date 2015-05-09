@@ -27,19 +27,13 @@ func (r *LogReader) GetReader(offset int64) ([]byte, *io.SectionReader, error) {
 		return nil, nil, errInvalidOffset
 	}
 
-	buf := make([]byte, 10)
+	buf := make([]byte, 20)
 	if _, err := r.file.ReadAt(buf, offset); err != nil {
 		return nil, nil, err
 	}
 
 	klen, n := binary.Uvarint(buf)
-	if klen > maxUint32 {
-		return nil, nil, errInvalidOffset
-	}
 	vlen, m := binary.Uvarint(buf[n:])
-	if vlen > maxUint32 {
-		return nil, nil, errInvalidOffset
-	}
 
 	min := offset + int64(n+m)
 	key := make([]byte, klen)

@@ -23,7 +23,7 @@ var _ = Describe("WriteIndex", func() {
 
 		out := &bytes.Buffer{}
 		Expect(writeIndex(reader, out)).NotTo(HaveOccurred())
-		Expect(out.Len()).To(Equal(2976))
+		Expect(out.Len()).To(Equal(4400))
 	})
 
 })

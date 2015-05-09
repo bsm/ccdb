@@ -79,7 +79,7 @@ type indexWriter struct {
 func newIndexWriter(dst io.Writer) *indexWriter {
 	return &indexWriter{
 		dst: dst,
-		buf: make([]byte, numBuckets*8),
+		buf: make([]byte, numBuckets*12),
 	}
 }
 
@@ -94,9 +94,9 @@ func (w *indexWriter) WriteBuckets(buckets [][]slot) error {
 	ipos := len(w.buf) + fileHeaderLen
 	for i, slots := range buckets {
 		nslots := len(slots) * 2
-		binary.LittleEndian.PutUint32(w.buf[i*8:], uint32(ipos))
-		binary.LittleEndian.PutUint32(w.buf[i*8+4:], uint32(nslots))
-		ipos += 8 * nslots
+		binary.LittleEndian.PutUint64(w.buf[i*12:], uint64(ipos))
+		binary.LittleEndian.PutUint32(w.buf[i*12+8:], uint32(nslots))
+		ipos += nslots * 12
 	}
 
 	_, err := w.dst.Write(w.buf)
@@ -104,13 +104,13 @@ func (w *indexWriter) WriteBuckets(buckets [][]slot) error {
 }
 
 // WriteSlots writes slot info
-func (w *indexWriter) WriteSlots(dense []slot, slots []slot) error {
+func (w *indexWriter) WriteSlots(dense []slot, cache []slot) error {
 	if len(dense) == 0 {
 		return nil
 	}
 
 	nslots := len(dense) * 2
-	slots = slots[:nslots]
+	slots := cache[:nslots]
 
 	// Reset slots
 	for i := 0; i < len(slots); i++ {
@@ -131,8 +131,8 @@ func (w *indexWriter) WriteSlots(dense []slot, slots []slot) error {
 
 	for _, slot := range slots {
 		binary.LittleEndian.PutUint32(w.buf[0:], uint32(slot.cksum))
-		binary.LittleEndian.PutUint32(w.buf[4:], uint32(slot.lpos))
-		if _, err := w.dst.Write(w.buf[:8]); err != nil {
+		binary.LittleEndian.PutUint64(w.buf[4:], uint64(slot.lpos))
+		if _, err := w.dst.Write(w.buf[:12]); err != nil {
 			return err
 		}
 	}

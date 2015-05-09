@@ -88,7 +88,7 @@ func readFileHeader(r io.Reader) (*fileHeader, error) {
 		return nil, errWrongMajorVersion
 	} else if h.id = binary.LittleEndian.Uint32(buf[6:]); h.id == 0 {
 		return nil, errBadFileID
-	} else if h.pos = int64(binary.LittleEndian.Uint32(buf[10:])); h.pos < fileHeaderLen {
+	} else if h.pos = int64(binary.LittleEndian.Uint64(buf[10:])); h.pos < fileHeaderLen {
 		return nil, errHeaderCorrupt
 	}
 	return &h, nil
@@ -104,7 +104,7 @@ func (h *fileHeader) WriteTo(w io.Writer) (int64, error) {
 	binary.LittleEndian.PutUint16(buf[2:], majorVersion)
 	binary.LittleEndian.PutUint16(buf[4:], minorVersion)
 	binary.LittleEndian.PutUint32(buf[6:], h.id)
-	binary.LittleEndian.PutUint32(buf[10:], uint32(h.pos))
+	binary.LittleEndian.PutUint64(buf[10:], uint64(h.pos))
 
 	n, err := w.Write(buf)
 	return int64(n), err
