@@ -3,6 +3,8 @@ package ccdb
 import (
 	"os"
 	"path/filepath"
+	"sync"
+	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -78,6 +80,36 @@ var _ = Describe("LogWriter", func() {
 			{Pos: 154, Key: []byte("key2"), Val: []byte("value2")},
 			{Pos: 166, Key: []byte("longerkey2"), Val: []byte("v2")},
 		}))
+	})
+
+	It("should be thread-safe", func() {
+		n := 100
+		if testing.Short() {
+			n = 10
+		}
+
+		wg := &sync.WaitGroup{}
+		wg.Add(n)
+
+		for i := 0; i < n; i++ {
+			go func() {
+				defer GinkgoRecover()
+				defer wg.Done()
+
+				doWrite("1")
+				doWrite("2")
+				doWrite("3")
+				doWrite("4")
+				doWrite("5")
+				Expect(subject.Flush()).NotTo(HaveOccurred())
+			}()
+		}
+		wg.Wait()
+		Expect(subject.header.pos).To(Equal(int64(n*130 + 128)))
+
+		stat, err := subject.file.Stat()
+		Expect(err).NotTo(HaveOccurred())
+		Expect(subject.header.pos).To(Equal(stat.Size()))
 	})
 
 	It("should index", func() {

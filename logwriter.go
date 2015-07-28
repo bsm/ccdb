@@ -68,13 +68,13 @@ func AppendLog(fname string) (*LogWriter, error) {
 
 // Flush flushes all buffers, rewrites header and issues an fsync()
 func (w *LogWriter) Flush() error {
+	w.mutex.Lock()
+	defer w.mutex.Unlock()
+
 	err := w.buffer.Flush()
 	if err != nil {
 		return err
 	}
-
-	w.mutex.Lock()
-	defer w.mutex.Unlock()
 
 	w.seekToPos = true
 
@@ -106,7 +106,7 @@ func (w *LogWriter) Put(key, val []byte) error {
 		if _, err := w.file.Seek(w.header.pos, os.SEEK_SET); err != nil {
 			return err
 		}
-		w.seekToPos = true
+		w.seekToPos = false
 	}
 
 	n := binary.PutUvarint(w.tbuf, uint64(len(key)))
