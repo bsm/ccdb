@@ -99,6 +99,12 @@ func (w *LogWriter) Close() error {
 
 // Put inserts a new key/value pair to the log
 func (w *LogWriter) Put(key, val []byte) error {
+	if len(key) == 0 {
+		return errBlankKey
+	} else if len(val) == 0 {
+		return errBlankValue
+	}
+
 	w.mutex.Lock()
 	defer w.mutex.Unlock()
 

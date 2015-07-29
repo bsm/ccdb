@@ -24,6 +24,8 @@ var (
 	errHeaderDifferent         = errors.New("ccdb: file headers differ")
 	errBadFileID               = errors.New("ccdb: bad file ID")
 	errInvalidOffset           = errors.New("ccdb: invalid offset")
+	errBlankKey                = errors.New("ccdb: keys must not be blank")
+	errBlankValue              = errors.New("ccdb: values must not be blank")
 )
 
 type version struct {

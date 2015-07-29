@@ -28,7 +28,8 @@ func (r *LogReader) GetReader(offset int64) ([]byte, *io.SectionReader, error) {
 	}
 
 	buf := make([]byte, 20)
-	if _, err := r.file.ReadAt(buf, offset); err != nil {
+
+	if n, err := r.file.ReadAt(buf, offset); err != nil && (err != io.EOF || n < 4) {
 		return nil, nil, err
 	}
 

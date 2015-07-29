@@ -112,6 +112,11 @@ var _ = Describe("LogWriter", func() {
 		Expect(subject.header.pos).To(Equal(stat.Size()))
 	})
 
+	It("should disallow blanks", func() {
+		Expect(subject.Put([]byte{}, []byte("value"))).To(Equal(errBlankKey))
+		Expect(subject.Put([]byte("key"), []byte{})).To(Equal(errBlankValue))
+	})
+
 	It("should index", func() {
 		iname := filepath.Join(dir, "data.cci")
 		doWrite("1")

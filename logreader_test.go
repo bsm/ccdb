@@ -3,6 +3,7 @@ package ccdb
 import (
 	"io"
 	"os"
+	"path/filepath"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -64,6 +65,22 @@ var _ = Describe("LogReader", func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(n).To(Equal(11))
 		Expect(string(buf[:n])).To(Equal("val.0000.00"))
+	})
+
+	It("should retrieve small k/v pairs", func() {
+		fname := filepath.Join(dir, "test2.ccl")
+		writer, err := CreateLog(fname)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(writer.Put([]byte{'a'}, []byte{'b'})).NotTo(HaveOccurred())
+		Expect(writer.Close()).NotTo(HaveOccurred())
+
+		reader, err := OpenLog(fname)
+		Expect(err).NotTo(HaveOccurred())
+
+		key, val, err := reader.Get(128)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(string(key)).To(Equal("a"))
+		Expect(string(val)).To(Equal("b"))
 	})
 
 })
