@@ -1,19 +1,16 @@
-default: testshort
+default: test test-race
 
 deps:
 	go get -t ./...
 
-test: testlong testrace
-
-testlong:
+test:
 	go test ./...
 
-testshort:
-	go test ./... -short
-
-testrace:
-	go test ./... -race -short -cpu=1,2,4
+test-race:
+	go test ./... -race -cpu=1,2,4
 
 bench:
 	go test ./... -bench=. -benchmem -run=NONE
 
+README.md: README.md.tpl $(wildcard *.go)
+	becca -package $(subst $(GOPATH)/src/,,$(PWD))

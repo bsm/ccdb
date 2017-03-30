@@ -30,7 +30,7 @@ func Open(indexFileName, logFileName string) (*DB, error) {
 		return nil, errHeaderDifferent
 	}
 
-	return &DB{index, log}, nil
+	return &DB{index: index, log: log}, nil
 }
 
 // Close closed the database
