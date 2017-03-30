@@ -7,7 +7,8 @@ import (
 	"sync"
 )
 
-// LogWriters append to log files. WARNING: log writers are not thread-safe,
+// LogWriter instances append to log files.
+// WARNING: log writers are not thread-safe,
 // use a single writer thread or protect concurrent writes with a mutex.
 type LogWriter struct {
 	header *fileHeader
