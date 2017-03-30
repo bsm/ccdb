@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/bsm/ccdb.png)](https://travis-ci.org/bsm/ccdb)
 [![GoDoc](https://godoc.org/github.com/bsm/ccdb?status.png)](http://godoc.org/github.com/bsm/ccdb)
+[![Go Report Card](https://goreportcard.com/badge/github.com/bsm/ccdb)](https://goreportcard.com/report/github.com/bsm/ccdb)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ccdb is a pure Go library to read and write ccdb ("continuous constant database") databases.
